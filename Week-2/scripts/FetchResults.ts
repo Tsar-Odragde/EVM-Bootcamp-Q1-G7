@@ -1,11 +1,20 @@
-import { createPublicClient, http, hexToString } from 'viem';
-import { sepolia } from 'viem/chains';
-import { abi } from '../artifacts/contracts/Ballot.sol/Ballot.json';
-import * as dotenv from 'dotenv';
+import { createPublicClient, http, hexToString } from "viem";
+import { sepolia } from "viem/chains";
+import { abi } from "../artifacts/contracts/Ballot.sol/Ballot.json";
+import * as dotenv from "dotenv";
 dotenv.config();
 
-const providerApiKey = process.env.ALCHEMY_API_KEY || '';
-const ballotAddress = process.env.BALLOT_CONTRACT_ADDRESS || '';
+const providerApiKey = process.env.ALCHEMY_API_KEY || "";
+
+// Expected CLI parameters: node script.ts <contractAddress>
+// Example usage: node script.ts 0xYourContractAddress
+const parameters = process.argv.slice(2);
+if (!parameters || parameters.length < 1)
+  throw new Error("Contract address parameter not provided");
+
+const ballotAddress = parameters[0] as `0x${string}`;
+if (!/^0x[a-fA-F0-9]{40}$/.test(ballotAddress))
+  throw new Error("Invalid contract address provided");
 
 async function main() {
   const publicClient = createPublicClient({
@@ -14,27 +23,27 @@ async function main() {
   });
 
   const winningProposalIndex = await publicClient.readContract({
-    address: ballotAddress as `0x${string}`,
+    address: ballotAddress,
     abi,
-    functionName: 'winningProposal',
+    functionName: "winningProposal",
   }) as bigint;
 
   const winnerNameBytes = await publicClient.readContract({
-    address: ballotAddress as `0x${string}`,
+    address: ballotAddress,
     abi,
-    functionName: 'winnerName',
-  });
+    functionName: "winnerName",
+  }) as `0x${string}`;
 
   const winnerProposal = await publicClient.readContract({
-    address: ballotAddress as `0x${string}`,
+    address: ballotAddress,
     abi,
-    functionName: 'proposals',
+    functionName: "proposals",
     args: [winningProposalIndex],
   }) as [string, bigint];
 
-  console.log('Winning Proposal Index:', winningProposalIndex.toString());
-  console.log('Winner Name:', hexToString(winnerNameBytes as `0x${string}`, { size: 32 }));
-  console.log('Winner Vote Count:', winnerProposal[1].toString());
+  console.log("Winning Proposal Index:", winningProposalIndex.toString());
+  console.log("Winner Name:", hexToString(winnerNameBytes, { size: 32 }));
+  console.log("Winner Vote Count:", winnerProposal[1].toString());
 }
 
 main().catch((error) => {

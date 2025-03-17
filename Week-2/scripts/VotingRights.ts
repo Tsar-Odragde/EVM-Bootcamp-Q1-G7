@@ -8,56 +8,55 @@ dotenv.config();
 const providerApiKey = process.env.ALCHEMY_API_KEY || "";
 const deployerPrivateKey = process.env.PRIVATE_KEY || "";
 
+const COMMANDS = ["giveRightToVote", "delegate"];
+
+// Expected CLI parameters: node script.ts <contractAddress> <voterAddress> <command>
+// Example usage: node script.ts 0xYourContractAddress 0xVoterAddress giveRightToVote
+const parameters = process.argv.slice(2);
+if (!parameters || parameters.length < 3)
+  throw new Error("Parameters (contractAddress, voterAddress, command) not provided");
+
+const contractAddress = parameters[0] as `0x${string}`;
+if (!/^0x[a-fA-F0-9]{40}$/.test(contractAddress))
+  throw new Error("Invalid contract address provided");
+
+const voterAddress = parameters[1] as `0x${string}`;
+if (!/^0x[a-fA-F0-9]{40}$/.test(voterAddress))
+  throw new Error("Invalid voter address provided");
+
+const command = parameters[2].trim();
+if (!COMMANDS.includes(command))
+  throw new Error(`Invalid command: '${command}'.`);
+
 async function main() {
-    const parameters = process.argv.slice(2);
-    if (!parameters || parameters.length < 1)
-        throw new Error("Parameters not provided");
+  const publicClient = createPublicClient({
+    chain: sepolia,
+    transport: http(`https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`),
+  });
 
-    const contractAddress = parameters[0] as `0x${string}`;
-    if (!contractAddress) 
-        throw new Error("Contract address not provided");
-    if (!/^0x[a-fA-F0-9]{40}$/.test(contractAddress)) 
-        throw new Error("Invalid contract address");
+  const account = privateKeyToAccount(`0x${deployerPrivateKey}`);
+  const walletClient = createWalletClient({
+    account,
+    chain: sepolia,
+    transport: http(`https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`),
+  });
 
-    const voterAddress = parameters[1] as `0x${string}`;
-    if (!voterAddress) 
-        throw new Error("Voter address not provided");
-    if (!/^0x[a-fA-F0-9]{40}$/.test(contractAddress)) 
-        throw new Error("Invalid voter address");
+  const hash = await walletClient.writeContract({
+    address: contractAddress,
+    abi,
+    functionName: command,
+    args: [voterAddress],
+  });
 
-    const _COMMANDS = ["giveRightToVote", "delegate"];
-    const command = parameters[2];
-    if (!command) 
-        throw new Error("Command not provided");
-    if (!_COMMANDS.includes(command)) 
-        throw new Error(`Invalid command '${command}'. Must be one of ${_COMMANDS}`);
+  const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
-    const publicClient = createPublicClient({
-        chain: sepolia,
-        transport: http(`https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`),
-    });
-
-    const account = privateKeyToAccount(`0x${deployerPrivateKey}`);
-    const deployer = createWalletClient({
-        account: account,
-        chain: sepolia,
-        transport: http(`https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`),
-    });
-
-    const hash = await deployer.writeContract({
-        address: contractAddress,
-        abi,
-        functionName: command,
-        args: [voterAddress],
-    });
-    console.log("Transaction hash:", hash);
-    console.log("Waiting for confirmations...");
-    const receipt = await publicClient.waitForTransactionReceipt({ hash });
-    console.log("Transaction confirmed.");
-    console.log(`Receipt: ${receipt}`);
+  console.log("Transaction confirmed.");
+  console.log(`Receipt status: ${receipt.status}`);
+  console.log(`Gas used: ${receipt.gasUsed}`);
+  console.log(`Block number: ${receipt.blockNumber}`);
 }
 
 main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
+  console.error(error);
+  process.exitCode = 1;
 });
