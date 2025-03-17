@@ -135,7 +135,7 @@ npx ts-node --files ./scripts/FetchResults.ts <contractAddress>
 
 - **Delegate Vote:**  
     - https://sepolia.etherscan.io/tx/0x75822b2836507f661d1a21eee7ae0d0a7394377cfbfc1ef70c1c57a59a4fa88a - *Successful*
-    - *Failed due to delegatee account do not posses voting rights:*  
+    - *Failed due to delegatee account do not possesing voting rights:*  
         - https://sepolia.etherscan.io/tx/0xc7bbf0eef9e5f432b783d882de240a1cb94143be25df4b0b95a17b6bb593150e
         - https://sepolia.etherscan.io/tx/0x7da446b5e6b9826bada169d4da3ff6cb61d30d31dfeef3cd97412a47297d3cd0
 
