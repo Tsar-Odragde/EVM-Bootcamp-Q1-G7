@@ -1,17 +1,17 @@
-Week-2/node_modules
-Week-2/.env
+**/node_modules
+**/.env
 
 # Hardhat files
-Week-2/cache
-Week-2/artifacts
+**/cache
+**/artifacts
 
 # TypeChain files
-Week-2/typechain
-Week-2/typechain-types
+**/typechain
+**/typechain-types
 
 # solidity-coverage files
-Week-2/coverage
-Week-2/coverage.json
+**/coverage
+**/coverage.json
 
 # Hardhat Ignition default folder for deployments against a local node
-Week-2/ignition/deployments/chain-31337
+**/ignition/deployments/chain-31337
