@@ -43,4 +43,4 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-// MyToken deployed at address: 0xcf3f73657d3a6db6d45a63210b9631d85e4782e1
+// MyToken deployed at address: 0x54dd343df8eff9a651b9da840fd6a81b2de5df2b

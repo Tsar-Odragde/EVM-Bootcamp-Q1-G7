@@ -3,6 +3,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 interface IMyToken {
     function getPastVotes(address account, uint256 blockNumber) external view returns (uint256);
+    function delegates(address account) external view returns (address);
 }
 
 contract TokenizedBallot {
@@ -16,7 +17,6 @@ contract TokenizedBallot {
     uint256 public targetBlockNumber;
 
     mapping(address => uint256) public spentVotingPower;
-    mapping(address => address) public delegatedTo;
 
     constructor(
         bytes32[] memory _proposalNames,
@@ -33,19 +33,11 @@ contract TokenizedBallot {
     }
 
     function vote(uint256 proposal, uint256 amount) external {
-        require(delegatedTo[msg.sender] == address(0), "You've delegated your votes");
-        require(getRemainingVotingPower(msg.sender) >= amount, "TokenizedBallot: Not enough voting power");
+        require(tokenContract.delegates(msg.sender) == msg.sender,"You must self-delegate your tokens first");
+        require(getRemainingVotingPower(msg.sender) >= amount, "Not enough voting power");
 
         spentVotingPower[msg.sender] += amount;
         proposals[proposal].voteCount += amount;
-    }
-
-    function delegate(address to) external {
-        require(to != msg.sender, "Cannot delegate to self");
-        require(delegatedTo[msg.sender] == address(0), "Already delegated");
-        require(delegatedTo[to] == address(0), "Delegatee cannot have delegated");
-        
-        delegatedTo[msg.sender] = to;
     }
     
     function getRemainingVotingPower(address voter) public view returns (uint256 votePower_) {

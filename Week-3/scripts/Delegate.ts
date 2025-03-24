@@ -1,7 +1,7 @@
 import { createPublicClient, createWalletClient, http, getContract } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
-import { abi } from "../artifacts/contracts/TokenizedBallot.sol/TokenizedBallot.json";
+import MyTokenABI from "../artifacts/contracts/MyToken.sol/MyToken.json";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -11,17 +11,16 @@ const deployerPrivateKey = process.env.PRIVATE_KEY || "";
 
 async function main() {
   const args = process.argv.slice(2);
-  if (args.length < 3) {
-    throw new Error("Missing arguments. Usage: npx ts-node --files ./scripts/delegate.ts <ballot-contract-address> <delegator-address> <delegatee-address>");
+  if (args.length < 2) {
+    throw new Error("Missing arguments. Usage: npx ts-node --files ./scripts/delegate.ts <token-contract-address> <delegatee-address>");
   }
 
-  const BALLOT_CONTRACT_ADDRESS = args[0];
-  const DELEGATOR_ADDRESS = args[1];
-  const DELEGATEE_ADDRESS = args[2];
+  const TOKEN_CONTRACT_ADDRESS = args[0];
+  const DELEGATEE_ADDRESS = args[1];
 
   const account = privateKeyToAccount(`0x${deployerPrivateKey}`);
 
-  const deployer = createWalletClient({
+  const walletClient = createWalletClient({
     account,
     chain: sepolia,
     transport: http(`https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`),
@@ -33,15 +32,20 @@ async function main() {
   });
 
   const contract = getContract({
-    address: BALLOT_CONTRACT_ADDRESS as `0x${string}`,
-    abi: abi,
-    client: { public: publicClient, wallet: deployer },
+    address: TOKEN_CONTRACT_ADDRESS as `0x${string}`,
+    abi: MyTokenABI.abi,
+    client: { public: publicClient, wallet: walletClient },
   });
+
+  console.log(`Delegating voting power to ${DELEGATEE_ADDRESS}...`);
 
   const delegateTx = await contract.write.delegate([DELEGATEE_ADDRESS]);
   await publicClient.waitForTransactionReceipt({ hash: delegateTx });
+  const votesAfter = await contract.read.getVotes([DELEGATEE_ADDRESS]) as bigint;
 
-  console.log(`Delegator ${DELEGATOR_ADDRESS} delegated votes to ${DELEGATEE_ADDRESS}`);
+  console.log(
+    `Account ${DELEGATEE_ADDRESS} has ${votesAfter.toString()} units of voting power after delegating\n`
+  );
 }
 
 main().catch((error) => {

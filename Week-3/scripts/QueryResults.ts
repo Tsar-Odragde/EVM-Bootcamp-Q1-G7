@@ -1,4 +1,4 @@
-import { createPublicClient, http, getContract } from "viem";
+import { createPublicClient, http, hexToString } from "viem";
 import { sepolia } from "viem/chains";
 import { abi } from "../artifacts/contracts/TokenizedBallot.sol/TokenizedBallot.json";
 import * as dotenv from "dotenv";
@@ -7,32 +7,44 @@ dotenv.config();
 
 const providerApiKey = process.env.ALCHEMY_API_KEY || "";
 
+// Expected CLI parameters: node script.ts <contractAddress>
+// Example usage: node script.ts 0xYourContractAddress
+const parameters = process.argv.slice(2);
+if (!parameters || parameters.length < 1)
+  throw new Error("Contract address parameter not provided");
+
+const ballotAddress = parameters[0] as `0x${string}`;
+if (!/^0x[a-fA-F0-9]{40}$/.test(ballotAddress))
+  throw new Error("Invalid contract address provided");
+
 async function main() {
-  const args = process.argv.slice(2);
-  if (args.length < 1) {
-    throw new Error("Usage: ts-node queryResults.ts <ballot-contract-address>");
-  }
-
-  const BALLOT_CONTRACT_ADDRESS = args[0];
-
   const publicClient = createPublicClient({
     chain: sepolia,
     transport: http(`https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`),
   });
 
-  const contract = getContract({
-    address: BALLOT_CONTRACT_ADDRESS as `0x${string}`,
-    abi: abi,
-    client: publicClient,
-  });
+  const winningProposalIndex = await publicClient.readContract({
+    address: ballotAddress,
+    abi,
+    functionName: "winningProposal",
+  }) as bigint;
 
-  const winningProposalIndex = await contract.read.winningProposal();
-  const winningProposalName = await contract.read.winnerName() as any;
-  const winningProposalVotes = await contract.read.proposalVotes([winningProposalIndex]) as any;
+  const winnerNameBytes = await publicClient.readContract({
+    address: ballotAddress,
+    abi,
+    functionName: "winnerName",
+  }) as `0x${string}`;
 
-  console.log(`Winning proposal index: ${winningProposalIndex}`);
-  console.log(`Winning proposal name: ${Buffer.from(winningProposalName).toString().replace(/\0/g, '')}`);
-  console.log(`Winning proposal vote count: ${winningProposalVotes.toString()}`);
+  const winnerProposal = await publicClient.readContract({
+    address: ballotAddress,
+    abi,
+    functionName: "proposals",
+    args: [winningProposalIndex],
+  }) as [string, bigint];
+
+  console.log("Winning Proposal Index:", winningProposalIndex.toString());
+  console.log("Winner Name:", hexToString(winnerNameBytes, { size: 32 }));
+  console.log("Winner Vote Count:", winnerProposal[1].toString());
 }
 
 main().catch((error) => {
