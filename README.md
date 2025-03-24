@@ -1,74 +1,90 @@
-# EVM Bootcamp Q1 - Week 3 Group Project
+# EVM Bootcamp Q1 G7
 
-This repository contains the deliverable for a group activity as part of the EVM Bootcamp Week3 Homework. The project focuses on developing scripts to interact with the provided Solidity smart contract Tokenized-Ballot.sol.
+Welcome to the **EVM Bootcamp Q1 G7** repository. This repository serves to register the weekly projects of **Group 7** for the **Encode Club Solidity Bootcamp**. Each week, participants complete hands-on projects covering different aspects of Ethereum Virtual Machine (EVM) development, from Solidity fundamentals to advanced governance mechanisms.
 
-Develop and run scripts for “TokenizedBallot.sol” within our group to give voting tokens, delegating voting power, casting votes, checking vote power and querying results
-    Develop and execute scripts for Tokenized-Ballot.sol to perform:
-        Granting voting rights
-        Casting votes
-        Delegating votes
-        Querying voting results
+## Repository Structure
 
-    Document each function execution clearly, noting:
-        Transaction hashes for successful operations
-        Revert reasons for any failed transactions
+The repository is organized into weekly modules, each focusing on specific aspects of EVM development:
 
-    Submit the final report through the provided form in Discord.
+- **Week-1/**: Introduction to Solidity and smart contract development.
+- **Week-2/**: Advanced Solidity concepts and smart contract interactions.
+- **Week-3/**: Governance mechanisms and token-based voting systems.
 
-    Ensure the code is uploaded to a GitHub repository and linked appropriately.
+Each week's directory contains relevant contracts, scripts, and documentation to facilitate learning and practical implementation.
 
-    
-    Install dependencies:
+## Getting Started
 
-npm install
+To begin working with this repository:
 
-    Configure Environment Variables:
+1. **Clone the Repository**:
 
-Create a .env file in the Week-2 directory containing:
+   ```bash
+   git clone https://github.com/Tsar-Odragde/EVM-Bootcamp-Q1-G7.git
+   ```
 
-ALCHEMY_API_KEY=your_alchemy_api_key
-PRIVATE_KEY=your_wallet_private_key
+2. **Navigate to the Desired Week's Directory**:
 
-Using the Scripts
-Deploy Ballot Contract
+   ```bash
+   cd EVM-Bootcamp-Q1-G7/Week-<number>
+   ```
 
-Deploy your contract with specified proposal names:
+3. **Install Dependencies**:
 
-npx hardhatrun scripts/TestVoteToken.ts
+   Ensure you have [Node.js](https://nodejs.org/) installed. Then, install the necessary packages:
 
+   ```bash
+   npm install
+   ```
 
+4. **Set Up Environment Variables**:
 
-Technologies Used
+   Create a `.env` file in the week's directory with the following content:
 
-    Solidity - Smart contract programming language
-    TypeScript - Scripting for smart contract interaction
-    Viem - Ethereum client library for script execution
-    Hardhat - Ethereum development environment for smart contracts
-    Alchemy - RPC API for Ethereum blockchain data
+   ```env
+   ALCHEMY_API_KEY=your_alchemy_api_key
+   PRIVATE_KEY=your_private_key
+   ```
 
-Reporting & Submission
-Minting Tokens:
-Transaction Hash: 0xf82ae5f91e85d420ccef148f964695e4819032df83d6d1a3109afacb487b3287
-Block Number: 2
-Gas Used: 122,480
-Status: Success
-Delegating Voting Power:
-Transaction Hash: 0x9bb649519700e3cb3005995e3ac5585a0ca420df8f8a1176ac40708f103df79a
-Block Number: 3
-Gas Used: 96,881
-Status: Success
-Checking Vote Power:
-Initial voting power: 0
-After delegation: 1,000,000,000,000,000,000,000 (1000 tokens)
-Historical Voting Power:
-Block 2: 0 votes
-Block 1: 0 votes
-    
-Contributors
+   Replace `your_alchemy_api_key` and `your_private_key` with your actual Alchemy API key and Ethereum wallet private key, respectively.
 
-    Tsar-Odragde - HSWW8s
-    jjmaloth - GMm8Id
-    TAUFIQ HIDAYAH - JH2nHs
+## Weekly Modules Overview
 
-License
-This project is open source and available under the MIT License.
+### Week 1: Introduction to Solidity
+
+- **Focus**: Basics of Solidity, smart contract structure, and deployment.
+- **Contents**:
+  - Simple smart contracts.
+  - Deployment scripts.
+  - Basic interaction scripts.
+
+### Week 2: Advanced Solidity and Interactions
+
+- **Focus**: Complex Solidity concepts, contract inheritance, and inter-contract communication.
+- **Contents**:
+  - Advanced smart contracts.
+  - Scripts for complex interactions.
+  - Unit tests for smart contracts.
+
+### Week 3: Governance and Tokenized Voting
+
+- **Focus**: Implementing governance mechanisms using token-based voting systems.
+- **Contents**:
+  - **MyToken.sol**: ERC20-based governance token with minting and delegation functionalities.
+  - **TokenizedBallot.sol**: Smart contract enabling token-based voting on proposals.
+  - Scripts for deploying contracts, minting tokens, delegating voting power, casting votes, checking voting power, and querying voting results.
+
+## Resources
+
+- [Solidity Documentation](https://soliditylang.org/docs/)
+- [OpenZeppelin Contracts](https://openzeppelin.com/contracts/)
+- [Viem Documentation](https://viem.sh/)
+
+## Contributors
+
+- **Tsar-Odragde** - HSWW8s
+- **jjmaloth** - GMm8Id
+- **TAUFIQ HIDAYAH** - JH2nHs
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
