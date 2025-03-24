@@ -17,7 +17,7 @@ async function main() {
         acc1.account.address
       }\n`
     );
-    const balanceBN = await contract.read.balanceOf([acc1.account.address]) as bigint;
+    const balanceBN = await contract.read.balanceOf([acc1.account.address]);
     console.log(
       `Account ${
         acc1.account.address
@@ -25,7 +25,7 @@ async function main() {
     );  
     
     // Checking the Voting Power
-    const votes = await contract.read.getVotes([acc1.account.address]) as bigint;
+    const votes = await contract.read.getVotes([acc1.account.address]);
     console.log(
       `Account ${
         acc1.account.address
@@ -37,7 +37,7 @@ async function main() {
       account: acc1.account,
     });
     await publicClient.waitForTransactionReceipt({ hash: delegateTx });
-    const votesAfter = await contract.read.getVotes([acc1.account.address]) as bigint;
+    const votesAfter = await contract.read.getVotes([acc1.account.address]);
     console.log(
       `Account ${
         acc1.account.address
@@ -54,7 +54,7 @@ async function main() {
     await publicClient.waitForTransactionReceipt({ hash: transferTx });
     const votes1AfterTransfer = await contract.read.getVotes([
       acc1.account.address,
-    ]) as bigint;
+    ]);
     console.log(
       `Account ${
         acc1.account.address
@@ -62,7 +62,7 @@ async function main() {
     );
     const votes2AfterTransfer = await contract.read.getVotes([
       acc2.account.address,
-    ]) as bigint;
+    ]);
     console.log(
       `Account ${
         acc2.account.address
@@ -75,7 +75,7 @@ async function main() {
     const pastVotes = await contract.read.getPastVotes([
       acc1.account.address,
       index,
-    ]) as bigint;
+    ]);
     console.log(
       `Account ${
         acc1.account.address
@@ -88,7 +88,7 @@ async function main() {
       account: acc2.account,
     });
     await publicClient.waitForTransactionReceipt({ hash: delegateTx2 });
-    const votesAfter2 = await contract.read.getVotes([acc2.account.address]) as bigint;
+    const votesAfter2 = await contract.read.getVotes([acc2.account.address]);
     console.log(
       `Account ${
         acc2.account.address
