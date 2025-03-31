@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as tokenJson from "./assets/MyToken.json";
-import { Address, createPublicClient, createWalletClient, http } from 'viem';
+import { Address, createPublicClient, createWalletClient, http, parseUnits } from 'viem';
 import { sepolia } from 'viem/chains';
 import { ConfigService } from '@nestjs/config';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -12,13 +12,14 @@ export class AppService {
 
   constructor(private configService: ConfigService) {
     const account = privateKeyToAccount(`0x${this.configService.get<string>('PRIVATE_KEY')}`);
+    const rpcUrl = `https://eth-sepolia.g.alchemy.com/v2/${this.configService.get<string>('ALCHEMY_API_KEY')}`
 
     this.publicClient = createPublicClient({
       chain: sepolia,
-      transport: http(`https://eth-sepolia.g.alchemy.com/v2/${this.configService.get<string>('ALCHEMY_API_KEY')}`),
+      transport: http(rpcUrl),
     });
     this.walletClient = createWalletClient({
-      transport: http(process.env.RPC_ENDPOINT_URL),
+      transport: http(rpcUrl),
       chain: sepolia,
       account: account,
     });
@@ -82,7 +83,19 @@ export class AppService {
     return hasRole;
   }
 
-  mintTokens(address: any) {
-    throw new Error('Method not implemented.');
+  async mintTokens(recipientAddress: string, amount: string): Promise<string> {
+    console.log(`Minting ${amount} tokens to ${recipientAddress}`);
+
+    const mintTx = await this.walletClient.writeContract({
+      address: this.getContractAddress() as Address,
+      abi: tokenJson.abi,
+      functionName: "mint",
+      args: [recipientAddress, parseUnits(amount, 18)],
+    });
+  
+    const receipt = await this.publicClient.waitForTransactionReceipt({ hash: mintTx });
+  
+    console.log(`Minted successfully. Tx Hash: ${receipt.transactionHash}`);
+    return receipt.transactionHash;
   }
 }  

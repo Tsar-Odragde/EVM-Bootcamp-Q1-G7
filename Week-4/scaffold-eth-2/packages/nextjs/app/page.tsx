@@ -1,253 +1,185 @@
 "use client";
 
-import type { NextPage } from "next";
-import { useEffect, useState } from "react";
-import { useAccount, useBalance, useReadContract, useSignMessage } from "wagmi";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useState } from "react";
+import { NextPage } from "next";
+//import Link from "next/link";
+import { castVote, delegateVotingPower, mintTokens } from "../utils/api";
 
-const Home: NextPage = () => {
+const tokenAddress = "0x54dd343df8eff9a651b9da840fd6a81b2de5df2b"; // Replace with actual address
+const ballotAddress = "0x7a880b0ea32d92f5fceecc95bc13caf63cf8e097"; // Replace with actual address
+
+const HomePage: NextPage = () => {
+  const [recipient, setRecipient] = useState("");
+  const [amount, setAmount] = useState("");
+  const [txHash, setTxHash] = useState("");
+
+  const [proposalIndex, setProposalIndex] = useState("");
+  const [voteAmount, setVoteAmount] = useState("");
+  const [voteTxHash, setVoteTxHash] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleMint = async () => {
+    setIsLoading(true);
+
+    const result = await mintTokens(recipient, amount);
+    
+    // Ensure we store only the transaction hash as a string
+    if (result && typeof result === "object" && "result" in result) {
+      setTxHash(result.result); // Extract transaction hash
+    } else {
+      console.error("Invalid response from API:", result);
+    }
+    setIsLoading(false);
+  };
+
+  const handleDelegate = async () => {
+    console.log("Delegating using token address:", tokenAddress);
+
+    if (!tokenAddress || typeof tokenAddress !== "string" || !tokenAddress.startsWith("0x") || tokenAddress.length !== 42) {
+      alert("Invalid token address!");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await delegateVotingPower(tokenAddress);
+      if (result) {
+        alert("Successfully self-delegated! Tx Hash: " + result);
+      } else {
+        alert("Delegation failed. Check the console for errors.");
+      }
+    } catch (error) {
+      console.error("Delegation error:", error);
+      alert("Failed to delegate voting power!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVote = async () => {
+    console.log("Voting using ballot address:", ballotAddress);
+
+    if (!ballotAddress || typeof ballotAddress !== "string" || !ballotAddress.startsWith("0x") || ballotAddress.length !== 42) {
+      alert("Invalid ballot address!");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await castVote(ballotAddress, Number(proposalIndex), voteAmount);
+      if (result) {
+        setVoteTxHash(result);
+        alert("Successfully voted! Tx Hash: " + result);
+      } else {
+        alert("Voting failed. Check the console for errors.");
+      }
+    } catch (error) {
+      console.error("Voting error:", error);
+      alert("Failed to cast vote!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <>
-      <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center mb-8">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-          </h1>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/pages/index.tsx
-            </code>
-          </p>
-          <PageBody />
-          <ExampleContractRead/>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <h1 className="text-3xl font-bold mb-6">Welcome to the Voting dApp</h1>
+
+      {/* Navigation Links
+      <div className="flex space-x-4 mb-4">
+        <Link href="/nextpage">
+          <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+            Go to Next Page
+          </button>
+        </Link>
+      </div> */}
+
+      {/* Minting Section */}
+      <h2 className="text-2xl font-bold mb-4">Mint Voting Tokens</h2>
+
+      <input
+        type="text"
+        placeholder="Recipient Address"
+        value={recipient}
+        onChange={(e) => setRecipient(e.target.value)}
+        className="mb-2 p-2 border rounded w-80"
+      />
+      <input
+        type="number"
+        placeholder="Amount"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        className="mb-2 p-2 border rounded w-80"
+      />
+
+      <button
+        onClick={handleMint}
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        Mint
+      </button>
+
+      {txHash && (
+        <div className="mt-4 p-3 bg-green-200 border border-green-600 rounded">
+          <p>Transaction Hash:</p>
+          <a
+            href={`https://sepolia.etherscan.io/tx/${txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-700 underline"
+          >
+            {txHash}
+          </a>
         </div>
-      </div>
-    </>
+      )}
+
+      {/* Self-Delegation Section */}
+      <h2 className="text-2xl font-bold mt-8 mb-4">Self-Delegate Voting Power</h2>
+      <button
+        onClick={handleDelegate}
+        className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+      >
+        Self-Delegate
+      </button>
+
+      {/* Voting Section */}
+      <h2 className="text-2xl font-bold mt-8 mb-4">Cast Your Vote</h2>
+      <input
+        type="number"
+        placeholder="Proposal Index"
+        value={proposalIndex}
+        onChange={(e) => setProposalIndex(e.target.value)}
+        className="mb-2 p-2 border rounded w-80"
+      />
+      <input
+        type="number"
+        placeholder="Amount"
+        value={voteAmount}
+        onChange={(e) => setVoteAmount(e.target.value)}
+        className="mb-2 p-2 border rounded w-80"
+      />
+      <button
+        onClick={handleVote}
+        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+      >
+        Vote
+      </button>
+      {voteTxHash && (
+        <div className="mt-4 p-3 bg-green-200 border border-green-600 rounded">
+          <p>Transaction Hash:</p>
+          <a
+            href={`https://sepolia.etherscan.io/tx/${voteTxHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-700 underline"
+          >
+            {voteTxHash}
+          </a>
+        </div>
+      )}
+    </div>
   );
 };
 
-function PageBody() {
-  return (
-    <>
-      <p className="text-center text-lg">Here we are!</p>
-      <WalletInfo/>
-      <RandomWord/>
-    </>
-  );
-}
-
-function WalletInfo() {
-  const { address, isConnecting, isDisconnected, chain } = useAccount();
-  if (address)
-    return (
-      <div>
-        <p>Your account address is {address}</p>
-        <p>Connected to the network {chain?.name}</p>
-        <WalletAction/>
-        <WalletBalance address={address as `0x${string}`}></WalletBalance>
-        <TokenInfo address={address as `0x${string}`}></TokenInfo>
-      </div>
-    );
-  if (isConnecting)
-    return (
-      <div>
-        <p>Loading...</p>
-      </div>
-    );
-  if (isDisconnected)
-    return (
-      <div>
-        <p>Wallet disconnected. Connect wallet to continue</p>
-      </div>
-    );
-  return (
-    <div>
-      <p>Connect wallet to continue</p>
-    </div>
-  );
-}
-
-function WalletAction() {
-  const [signatureMessage, setSignatureMessage] = useState("");
-  const { data, isError, isPending, isSuccess, signMessage } = useSignMessage();
-  return (
-    <div className="card w-96 bg-primary text-primary-content mt-4">
-      <div className="card-body">
-        <h2 className="card-title">Testing signatures</h2>
-        <div className="form-control w-full max-w-xs my-4">
-          <label className="label">
-            <span className="label-text">Enter the message to be signed:</span>
-          </label>
-          <input
-            type="text"
-            placeholder="Type here"
-            className="input input-bordered w-full max-w-xs"
-            value={signatureMessage}
-            onChange={e => setSignatureMessage(e.target.value)}
-          />
-        </div>
-        <button
-          className="btn btn-active btn-neutral"
-          disabled={isPending}
-          onClick={() =>
-            signMessage({
-              message: signatureMessage,
-            })
-          }
-        >
-          Sign message
-        </button>
-        {isSuccess && <div>Signature: {data}</div>}
-        {isError && <div>Error signing message</div>}
-      </div>
-    </div>
-  );
-}
-
-function WalletBalance(params: { address: `0x${string}` }) {
-  const { data, isError, isLoading } = useBalance({
-    address: params.address,
-  });
-
-  if (isLoading) return <div>Fetching balance…</div>;
-  if (isError) return <div>Error fetching balance</div>;
-  return (
-    <div className="card w-96 bg-primary text-primary-content mt-4">
-      <div className="card-body">
-        <h2 className="card-title">Testing useBalance wagmi hook</h2>
-        Balance: {data?.formatted} {data?.symbol}
-      </div>
-    </div>
-  );
-}
-
-function TokenInfo(params: { address: `0x${string}` }) {
-  return (
-    <div className="card w-96 bg-primary text-primary-content mt-4">
-      <div className="card-body">
-        <h2 className="card-title">Testing useReadContract wagmi hook</h2>
-        <TokenName></TokenName>
-        <TokenBalance address={params.address}></TokenBalance>
-      </div>
-    </div>
-  );
-}
-
-function TokenName() {
-  const { data, isError, isLoading } = useReadContract({
-    address: "0x54Dd343DF8EfF9A651b9DA840fD6A81B2De5DF2B",
-    abi: [
-      {
-        constant: true,
-        inputs: [],
-        name: "name",
-        outputs: [
-          {
-            name: "",
-            type: "string",
-          },
-        ],
-        payable: false,
-        stateMutability: "view",
-        type: "function",
-      },
-    ],
-    functionName: "name",
-  });
-
-  const name = typeof data === "string" ? data : 0;
-
-  if (isLoading) return <div>Fetching name…</div>;
-  if (isError) return <div>Error fetching name</div>;
-  return <div>Token name: {name}</div>;
-}
-
-function TokenBalance(params: { address: `0x${string}` }) {
-  const { data, isError, isLoading } = useReadContract({
-    address: "0x37dBD10E7994AAcF6132cac7d33bcA899bd2C660",
-    abi: [
-      {
-        constant: true,
-        inputs: [
-          {
-            name: "_owner",
-            type: "address",
-          },
-        ],
-        name: "balanceOf",
-        outputs: [
-          {
-            name: "balance",
-            type: "uint256",
-          },
-        ],
-        payable: false,
-        stateMutability: "view",
-        type: "function",
-      },
-    ],
-    functionName: "balanceOf",
-    args: [params.address],
-  });
-
-  const balance = typeof data === "number" ? data : 0;
-
-  if (isLoading) return <div>Fetching balance…</div>;
-  if (isError) return <div>Error fetching balance</div>;
-  return <div>Balance: {balance}</div>;
-}
-
-function RandomWord() {
-  const [data, setData] = useState<any>(null);
-  const [isLoading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("https://randomuser.me/api/")
-      .then(res => res.json())
-      .then(data => {
-        setData(data.results[0]);
-        setLoading(false);
-      });
-  }, []);
-
-  if (isLoading) return <p>Loading...</p>;
-  if (!data) return <p>No profile data</p>;
-
-  return (
-    <div className="card w-96 bg-primary text-primary-content mt-4">
-      <div className="card-body">
-        <h2 className="card-title">Testing useState and useEffect from React library</h2>
-        <h1>
-          Name: {data.name.title} {data.name.first} {data.name.last}
-        </h1>
-        <p>Email: {data.email}</p>
-      </div>
-    </div>
-  );
-}
-
-function ExampleContractRead() {
-  const {
-    data: helloWorld,
-    isPending,
-    isError,
-    dataUpdatedAt,
-  } = useScaffoldReadContract({
-    contractName: "HelloWorld",
-    functionName: "helloWorld",
-  });
-
-  if (isPending) return <p className="text-center text-lg">Loading...</p>;
-  if (isError) return <p className="text-center text-lg">Error getting information from your contract</p>;
-
-  return (
-    <>
-      <p className="text-center text-lg">The text from the contract is {helloWorld}</p>
-      <p className="text-center text-sm">This data was last updated at {new Date(dataUpdatedAt).toLocaleString()}</p>
-    </>
-  );
-}
-
-export default Home; 
+export default HomePage;

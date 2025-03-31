@@ -8,6 +8,13 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+    // Enable CORS for frontend requests
+    app.enableCors({
+      origin: '*', 
+      methods: 'GET,POST',
+      allowedHeaders: 'Content-Type,Authorization',
+    });
+
   const config = new DocumentBuilder()
     .setTitle("API example")
     .setDescription("The API description")
