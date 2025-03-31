@@ -1,6 +1,5 @@
-import { createWalletClient, getContract, http, parseUnits, Address, encodeFunctionData } from "viem";
+import { http, parseUnits, encodeFunctionData, createPublicClient, hexToString } from "viem";
 import { sepolia } from "viem/chains";
-import { privateKeyToAccount } from "viem/accounts";
 import tokenABI from "../../hardhat/artifacts/contracts/MyToken.sol/MyToken.json";
 import ballotABI from "../../hardhat/artifacts/contracts/TokenizedBallot.sol/TokenizedBallot.json";
 
@@ -104,6 +103,42 @@ export const delegateVotingPower = async (tokenAddress: string) => {
       return txHash;
     } catch (error) {
       console.error("Error casting vote:", error);
+      return null;
+    }
+  };
+
+  export const queryResults = async (ballotAddress: string) => {
+    try {
+      if (!ballotAddress || typeof ballotAddress !== "string" || !ballotAddress.startsWith("0x") || ballotAddress.length !== 42) {
+        throw new Error(`Invalid ballot contract address: ${ballotAddress}`);
+      }
+  
+      // ✅ Create a public client to read from the blockchain
+      const publicClient = createPublicClient({
+        chain: sepolia,
+        transport: http(RPC_URL),
+      });
+  
+      // ✅ Fetch the winning proposal index
+      const winningProposalIndex = await publicClient.readContract({
+        address: ballotAddress as `0x${string}`,
+        abi: ballotABI.abi,
+        functionName: "winningProposal",
+      }) as `0x${string}`;
+  
+      // ✅ Fetch the name of the winning proposal
+      const winnerNameBytes32 = await publicClient.readContract({
+        address: ballotAddress as `0x${string}`,
+        abi: ballotABI.abi,
+        functionName: "winnerName",
+      }) as `0x${string}`;
+  
+      const winnerName = hexToString(winnerNameBytes32, {size: 32});
+
+      console.log(`Winning Proposal: ${winningProposalIndex} (${winnerName})`);
+      return { winningProposalIndex, winnerName };
+    } catch (error) {
+      console.error("Error querying voting results:", error);
       return null;
     }
   };

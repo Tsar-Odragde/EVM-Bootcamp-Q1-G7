@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { NextPage } from "next";
 //import Link from "next/link";
-import { castVote, delegateVotingPower, mintTokens } from "../utils/api";
+import { castVote, delegateVotingPower, mintTokens, queryResults } from "../utils/api";
 
 const tokenAddress = "0x54dd343df8eff9a651b9da840fd6a81b2de5df2b"; // Replace with actual address
 const ballotAddress = "0x7a880b0ea32d92f5fceecc95bc13caf63cf8e097"; // Replace with actual address
@@ -17,6 +17,8 @@ const HomePage: NextPage = () => {
   const [voteAmount, setVoteAmount] = useState("");
   const [voteTxHash, setVoteTxHash] = useState("");
 
+  const [winningProposal, setWinningProposal] = useState("");
+  const [winnerName, setWinnerName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleMint = async () => {
@@ -82,6 +84,31 @@ const HomePage: NextPage = () => {
     }
   };
 
+  const handleQueryResults = async () => {
+    console.log("Querying results using ballot address:", ballotAddress);
+
+    if (!ballotAddress || typeof ballotAddress !== "string" || !ballotAddress.startsWith("0x") || ballotAddress.length !== 42) {
+      alert("Invalid ballot address!");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await queryResults(ballotAddress);
+      if (result) {
+        setWinningProposal(result.winningProposalIndex.toString());
+        setWinnerName(result.winnerName);
+      } else {
+        alert("Failed to fetch voting results. Check the console for errors.");
+      }
+    } catch (error) {
+      console.error("Error fetching results:", error);
+      alert("Failed to fetch voting results.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <h1 className="text-3xl font-bold mb-6">Welcome to the Voting dApp</h1>
@@ -178,6 +205,24 @@ const HomePage: NextPage = () => {
           </a>
         </div>
       )}
+
+      {/* Voting Results Section */}
+      <h2 className="text-2xl font-bold mt-8 mb-4">Voting Results</h2>
+      <button
+        onClick={handleQueryResults}
+        className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600"
+        disabled={isLoading}
+      >
+        {isLoading ? "Fetching Results..." : "Get Voting Results"}
+      </button>
+
+      {winningProposal && (
+        <div className="mt-4 p-3 bg-blue-200 border border-blue-600 rounded">
+          <p className="text-lg font-semibold">Winning Proposal:</p>
+          <p className="text-xl font-bold">{winnerName} (Index: {winningProposal})</p>
+        </div>
+      )}
+      
     </div>
   );
 };
