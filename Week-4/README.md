@@ -111,6 +111,3 @@ This project successfully implemented a **decentralized voting system**, allowin
 🔗 **Check out the full repository:** [EVM Bootcamp Group 7](https://github.com/Tsar-Odragde/EVM-Bootcamp-Q1-G7)
 
 ---
-```
-
----
