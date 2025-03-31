@@ -1,5 +1,3 @@
-### 📜 **README.md for Week-4**
-```md
 # 🏗️ Week 4 - Building a Full-Stack Voting dApp with Scaffold-ETH 2 & NestJS
 
 ## 🚀 Overview
