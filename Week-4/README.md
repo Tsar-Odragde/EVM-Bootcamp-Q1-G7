@@ -103,6 +103,13 @@ yarn dev
 - **Scaffold-ETH 2** accelerates frontend dApp development.
 - **NestJS modular architecture** keeps the backend scalable and maintainable.
 
+## Contributors
+
+    Tsar-Odragde - HSWW8s
+    jjmaloth - GMm8Id
+    TAUFIQ HIDAYAH - JH2nHs
+
+
 ---
 
 ## 🎯 **Final Thoughts**
