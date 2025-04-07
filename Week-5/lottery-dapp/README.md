@@ -39,7 +39,7 @@ This project is a decentralized Lottery dApp that allows users to
 
 Here's a look at our working Lottery dApp interface:
 
-![Lottery dApp UI](https://i.imgur.com/NnpH2kX.png)
+![Lottery dApp UI](https://imgur.com/a/Dw3mjH5)
 
 ## Setup and Installation
 
