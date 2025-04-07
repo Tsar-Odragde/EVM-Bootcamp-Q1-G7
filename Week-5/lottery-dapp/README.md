@@ -35,6 +35,12 @@ This project is a decentralized Lottery dApp that allows users to
 - **Contract Interactions**: Utilizes Viem's `publicClient` to read data from the Lottery smart contract  
 - **Transaction Signing**: All write transactions are signed through MetaMask, ensuring secure user authentication and authorization  
 
+## 🎨 Preview
+
+Here's a look at our working Lottery dApp interface:
+
+![Lottery dApp UI](https://i.imgur.com/NnpH2kX.png)
+
 ## Setup and Installation
 
 1. **Clone the Repository**:
