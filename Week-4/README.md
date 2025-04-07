@@ -92,7 +92,7 @@ yarn start
 
 ### 5️⃣ Run the Frontend
 ```bash
-yarn dev
+yarn start
 ```
 
 ---

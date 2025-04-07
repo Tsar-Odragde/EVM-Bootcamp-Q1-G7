@@ -1,88 +1,78 @@
-# 🏗 Scaffold-ETH 2
+# 🎰 Lottery dApp
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+## Overview
+This project is a decentralized Lottery dApp that allows users to
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+-Purchase and return lottery tokens
+-Approve tokens for betting
+-Place single or multiple bets
+-View lottery status and personal prizes
+-Claim winnings
+The application is built using
 
-⚙️ Built using NextJS, RainbowKit, Foundry/Hardhat, Wagmi, Viem, and Typescript.
+-**Scaffold-ETH 2** for the frontend interface
+-**Viem** for blockchain interactions
+-**MetaMask** for transaction signing
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+## Project Goals
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+-Develop a user-friendly interface for interacting with the Lottery smart contract
+-Implement token purchase, return, approval, and betting functionalities
+-Enable users to view lottery status and claim prizes
+-Ensure secure and efficient blockchain interactions using Viem and MetaMask
 
-## Requirements
+## Implemented Features
 
-Before you begin, you need to install the following tools:
+### Frontend (Scaffold-ETH 2)
 
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+- **Token Management**:Users can purchase lottery tokens using ETH and return unused tokens
+- **Betting**:Users can place single or multiple bets after approving the required tokens
+- **Lottery Status**:Displays current lottery status, including whether bets are open, closing time, and total bets placed
+- **Prize Management**:Users can view their winnings and claim prizes directly from the interface
 
-## Quickstart
+### Blockchain Integration (Viem)
 
-To get started with Scaffold-ETH 2, follow the steps below:
+- **Contract Interactions**:Utilizes Viem's `publicClient` to read data from the Lottery smart contract
+- **Transaction Signing**:All write transactions are signed through MetaMask, ensuring secure user authentication and authorization
 
-1. Install the latest version of Scaffold-ETH 2
+## Setup and Installation
 
-```
-npx create-eth@latest
-```
+1. **Clone the Repository**:
 
-This command will install all the necessary packages and dependencies, so it might take a while.
+   ```bash
+   git clone https://github.com/Tsar-Odragde/EVM-Bootcamp-Q1-G7.git
+   ```
 
-> [!NOTE]
-> You can also initialize your project with one of our extensions to add specific features or starter-kits. Learn more in our [extensions documentation](https://docs.scaffoldeth.io/extensions/).
+2. **Navigate to the Project Directory**:
 
-2. Run a local network in the first terminal:
+   ```bash
+   cd EVM-Bootcamp-Q1-G7/Week-5
+   ```
 
-```
-yarn chain
-```
+3. **Install Dependencies**:
 
-This command starts a local Ethereum network that runs on your local machine and can be used for testing and development. Learn how to [customize your network configuration](https://docs.scaffoldeth.io/quick-start/environment#1-initialize-a-local-blockchain).
+   ```bash
+   yarn install
+   ```
 
-3. On a second terminal, deploy the test contract:
+4. **Start the Development Server**:
 
-```
-yarn deploy
-```
+   ```bash
+   yarn start
+   ```
 
-This command deploys a test smart contract to the local network. You can find more information about how to customize your contract and deployment script in our [documentation](https://docs.scaffoldeth.io/quick-start/environment#2-deploy-your-smart-contract).
+   The application will be running at `http://localhost:3000`.
 
-4. On a third terminal, start your NextJS app:
+## Usage
 
-```
-yarn start
-```
+- **Connect Wallet**:Use MetaMask to connect your wallet to the application
+- **Purchase Tokens**:Enter the amount of ETH to exchange for lottery tokens and confirm the transaction
+- **Approve Tokens**:Specify the number of tokens to approve for betting
+- **Place Bets**:Choose to place a single bet or multiple bets as desired
+- **View Lottery Status**:Check the current status of the lottery, including bet availability and closing time
+- **Claim Prizes**:If you have winnings, enter the amount to claim and confirm the transaction
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+## Notes
 
-**What's next**:
-
-Visit the [What's next section of our docs](https://docs.scaffoldeth.io/quick-start/environment#whats-next) to learn how to:
-
-- Edit your smart contracts
-- Edit your deployment scripts
-- Customize your frontend
-- Edit the app config
-- Writing and running tests
-- [Setting up external services and API keys](https://docs.scaffoldeth.io/deploying/deploy-smart-contracts#configuration-of-third-party-services-for-production-grade-apps)
-
-## Documentation
-
-Visit our [docs](https://docs.scaffoldeth.io) to learn all the technical details and guides of Scaffold-ETH 2.
-
-To know more about its features, check out our [website](https://scaffoldeth.io).
-
-## Contributing to Scaffold-ETH 2
-
-We welcome contributions to Scaffold-ETH 2!
-
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+-Ensure you are connected to the correct network (e.g., Hardhat local network or Sepolia testnet) when interacting with the dApp
+-The Lottery smart contract address is set to `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`. Update this address if deploying to a different network
